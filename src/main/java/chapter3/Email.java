@@ -24,7 +24,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
 @Retention(RUNTIME)
 public @interface Email {
-    String message() default "{chapter03.Email.message}";
+    String message() default "{chapter3.Email.message}";
 
     Class<?>[] groups() default {};
 
