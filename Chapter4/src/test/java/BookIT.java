@@ -1,5 +1,64 @@
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  * Created by deft1 on 13.05.2017.
  */
 public class BookIT {
+    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("chapter04Test");
+    private EntityManager em;
+    private EntityTransaction tx;
+
+    @Before
+    public void init() {
+        em = emf.createEntityManager();
+        tx = em.getTransaction();
+    }
+
+    @After
+    void close() {
+        if (em != null)
+            em.close();
+    }
+
+    @Test
+    public void shouldFindjavaee7Book() {
+        Book book = em.find(Book.class, "1001L");
+        assertEquals("Изучаем Java EE 7", book.getTitle());
+    }
+
+    @Test
+    public void shouldCreateH2G2Book() {
+        Book book = new Book("H2G2"
+                , "Автостопом по галактике"
+                , 12.5F
+                , "1-84023-742-2"
+                , 354
+                , false);
+        tx.begin();
+        em.persist(book);
+        tx.commit();
+        assertNotNull("ID не может быть пустым", book.getId());
+        book = (Book) em.createNamedQuery("findBookH2G2").getSingleResult();
+        assertEquals("Автостопом по галактике", book.getDescription());
+    }
+
+    public void shouldRaiseConstraintViolationCauseNullTitle() {
+        Book book = new Book(null
+                , "Пустое название, ошибка"
+                , 12.5F
+                , "1-84023-742-2"
+                , 354
+                , false);
+        em.persist(book);
+    }
 }
